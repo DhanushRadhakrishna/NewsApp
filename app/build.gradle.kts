@@ -7,6 +7,7 @@ plugins {
 android {
     namespace = "com.example.newsapp"
     compileSdk = 36
+    val apiKey: String = project.findProperty("API_KEY")?.toString() ?: ""
 
     defaultConfig {
         applicationId = "com.example.newsapp"
@@ -16,6 +17,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {

@@ -10,8 +10,6 @@ data class NewsResponse(
 
 fun NewsResponse.toDomain(): News {
     return News(
-        status = status,
-        totalResults = totalResults,
         articles = articles.map { it.toDomain() }
     )
 }

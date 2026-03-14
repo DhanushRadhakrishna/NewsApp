@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -41,6 +43,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsapp.presentation.navigation.Destination
 import com.example.newsapp.presentation.navigation.FavoritesDestination
 import com.example.newsapp.presentation.navigation.HomeDestination
+import com.example.newsapp.presentation.screens.TopHeadlines
+import com.example.newsapp.presentation.viewmodel.MainViewModel
 import com.example.newsapp.ui.theme.NewsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -51,21 +55,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+//        val viewModel : MainViewModel by viewModels()
         setContent {
             NewsAppTheme {
                 val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NewsApp(navController,modifier = Modifier.padding(innerPadding))
+                    NewsApp(navController,
+                        modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 @Composable
-fun NewsApp(navController: NavHostController,modifier: Modifier) {
+fun NewsApp(navController: NavHostController,
+            modifier: Modifier) {
     NavHost(navController, startDestination = HomeDestination,modifier = modifier) {
+
         composable<HomeDestination> { backStackEntry ->
-            NewsScreen(onFavoritesIconClick = {navController.navigateSingleTopTo(
+            TopHeadlines(onFavoritesIconClick = {navController.navigateSingleTopTo(
                 FavoritesDestination)})
         }
         composable<FavoritesDestination>{
@@ -80,40 +88,7 @@ fun NewsApp(navController: NavHostController,modifier: Modifier) {
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NewsScreen(modifier: Modifier = Modifier, onFavoritesIconClick: () -> Unit) {
-    var isRefreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    // TODO: replace with real data from ViewModel
-    val items = remember { (1..20).map { "News item #$it" } }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        TopBar(onFavoritesIconClick = onFavoritesIconClick)
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                scope.launch {
-                    isRefreshing = true
-                    delay(1500) // TODO: replace with ViewModel refresh call
-                    isRefreshing = false
-                }
-            },
-            modifier = Modifier.fillMaxSize()
-        ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(items) { item ->
-                    Text(
-                        text = item,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun TopBar(modifier: Modifier = Modifier, onFavoritesIconClick : () -> Unit) {
@@ -152,11 +127,4 @@ private fun NavHostController.navigateSingleTopTo(route: Destination) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun NewsScreenPreview() {
-    NewsAppTheme {
-        NewsScreen(Modifier,{})
-    }
-}
+

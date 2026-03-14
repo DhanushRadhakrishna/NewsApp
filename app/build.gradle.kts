@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,7 +12,10 @@ plugins {
 android {
     namespace = "com.example.newsapp"
     compileSdk = 36
-    val apiKey: String = project.findProperty("API_KEY")?.toString() ?: ""
+    val localProperties = project.rootProject.file("local.properties")
+    val properties = Properties()
+    properties.load(localProperties.inputStream())
+    val apiKey: String? = properties.getProperty("API_KEY") ?: ""
 
     defaultConfig {
         applicationId = "com.example.newsapp"
@@ -88,4 +93,5 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
     // JSON serialization library, works with the Kotlin serialization plugin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }

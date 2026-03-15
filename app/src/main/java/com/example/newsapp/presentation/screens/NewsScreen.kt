@@ -49,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.model.HeadlineSource
-import com.example.newsapp.presentation.TopBar
 import com.example.newsapp.presentation.uistate.ContentDisplayState
 import com.example.newsapp.presentation.uistate.DisplayState
 import com.example.newsapp.presentation.uistate.TopHeadlinesScreenState
@@ -69,10 +68,13 @@ fun TopHeadlines(
 {
     var isRefreshing by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
-        TopBar(onFavoritesIconClick = onFavoritesIconClick)
+        TopBar(
+            query = searchQuery,
+            onQueryChange ={newQuery -> viewModel.onSearchQueryChange(newQuery)},
+            onFavoritesIconClick = onFavoritesIconClick)
          TopHeadlinesScreen(
              uiState = uiState,
              isRefreshing = isRefreshing,

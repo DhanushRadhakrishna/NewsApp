@@ -87,38 +87,6 @@ fun NewsApp(navController: NavHostController,
 }
 
 
-
-
-
-@Composable
-fun TopBar(modifier: Modifier = Modifier, onFavoritesIconClick : () -> Unit) {
-    var query by remember { mutableStateOf("") }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            placeholder = { Text("Search news...") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            shape = RoundedCornerShape(50),
-            singleLine = true,
-            modifier = Modifier.weight(1f)
-        )
-        IconButton(onClick = { onFavoritesIconClick() }) {
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                modifier = Modifier.size(width = 35.dp, height = 35.dp)
-            )
-        }
-    }
-}
-
 private fun NavHostController.navigateSingleTopTo(route: Destination) {
     this.navigate(route){
         launchSingleTop = true

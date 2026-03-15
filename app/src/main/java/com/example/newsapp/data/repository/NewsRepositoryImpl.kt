@@ -14,10 +14,6 @@ class NewsRepositoryImpl @Inject constructor(
     private val newsApiService : NewsApi
 ) : NewsRepository {
     override suspend fun getPagedHeadlines(page : Int): Result<News> {
-
-        //the api call needs page number
-        //since the responses do not include any page number
-
         return safeApiCall { newsApiService.getPagedHeadlines(page = page).toDomain() }
     }
 

@@ -10,7 +10,6 @@ class NewsUseCase @Inject constructor(
     private val newsRepository: NewsRepository
 ){
 
-    //will need a repository to get list of news
     suspend operator fun invoke(page : Int) : Result<News> {
         return newsRepository.getPagedHeadlines(page)
     }

@@ -1,7 +1,9 @@
 package com.example.newsapp.presentation.viewmodel
 
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsapp.data.model.Article
@@ -13,31 +15,39 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.newsapp.data.network.utils.Result
+import com.example.newsapp.data.network.utils.dummyArticles
+import com.example.newsapp.data.network.utils.dummyNews
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.usecase.SearchNewsUseCase
 import com.example.newsapp.presentation.screens.TopHeadlines
 import com.example.newsapp.presentation.uistate.ContentDisplayState
 import com.example.newsapp.presentation.uistate.DisplayState
 import com.example.newsapp.presentation.uistate.TopHeadlinesScreenState
+import com.example.newsapp.presentation.userpreferences.UserPreferencesRepository
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 const val TAG = "MainViewModel"
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val newsUseCase : NewsUseCase,
-    private val searchNewsUseCase: SearchNewsUseCase
+    private val searchNewsUseCase: SearchNewsUseCase,
+    private val firebaseAnalytics : FirebaseAnalytics,
 )  : ViewModel(){
-
-
 
     private val _uiState = MutableStateFlow(TopHeadlinesScreenState(displayState = DisplayState.Loading))
     val uiState : StateFlow<TopHeadlinesScreenState> = _uiState.asStateFlow()
 
     private var page = 1
-
     private var reachedEndOfList = false
 
     private val _searchQuery = MutableStateFlow<String>("")
@@ -53,25 +63,34 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(displayState = DisplayState.Loading)
             }
-            val apiResult = newsUseCase.invoke(page)
+//            val apiResult = newsUseCase.invoke(page)
+            val apiResult = Result.Success(dummyNews)
             when(apiResult){
                 is Result.Success ->{
                     _uiState.update {
-                        it.copy(DisplayState.Content(apiResult.data.articles))
+
+                            it.copy(DisplayState.Content(apiResult.data.articles))
                     }
                 }
-                is Result.Error ->{
-                    _uiState.update {
-                        it.copy(DisplayState.Error(apiResult.message))
-                    }
-                }
+//                is Result.Error ->{
+//                    _uiState.update {
+//                        it.copy(DisplayState.Error(apiResult.message))
+//                    }
+//                }
             }
         }
+        firebaseAnalytics.logEvent("Refresh",null)
+    }
+
+    fun onArticleClick(url : String)
+    {
+        firebaseAnalytics.logEvent("ArticleClick",Bundle().apply {
+            putString("article_url", url)
+        })
     }
 
     fun paginate()
     {
-
         val currDisplayType  = _uiState.value.displayState
         if(currDisplayType is DisplayState.Content)
         {
@@ -92,7 +111,6 @@ class MainViewModel @Inject constructor(
             }
 
         }
-
     }
     fun getNextPageData(currArticleHeadlines : List<ArticleHeadline>)
     {
@@ -131,6 +149,9 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+        firebaseAnalytics.logEvent("Page",Bundle().apply {
+            putInt("page_number_request", page)
+        })
     }
     fun pagingError(message: String) {
         val currDisplayType = _uiState.value.displayState
@@ -142,6 +163,9 @@ class MainViewModel @Inject constructor(
                     )
                 )
             }
+            firebaseAnalytics.logEvent("EndOfPages",Bundle().apply {
+                putInt("page_number_request", page)
+            })
         }
     }
 
@@ -151,6 +175,7 @@ class MainViewModel @Inject constructor(
                 .debounce(500)   // wait 500ms after user stops typing
                 .filter { it.isNotBlank() }
                 .distinctUntilChanged()
+                .map { it.trim() }
                 .collect { query ->
                     _uiState.update { it.copy(displayState = DisplayState.Loading) }
                     val apiResult = searchNewsUseCase.invoke(query)
@@ -158,14 +183,21 @@ class MainViewModel @Inject constructor(
                         is Result.Success -> _uiState.update { it.copy(DisplayState.Content(apiResult.data.articles)) }
                         is Result.Error -> _uiState.update { it.copy(DisplayState.Error(apiResult.message)) }
                     }
+                    Log.i(TAG, query)
                 }
         }
+        firebaseAnalytics.logEvent("SearchRequest",Bundle().apply {
+            putString("search_query", _searchQuery.value)
+        })
     }
-
 
     fun onSearchQueryChange(query : String)
     {
-            _searchQuery.value = query
+        _searchQuery.value = query
+        if(_searchQuery.value.trim() =="")
+        {
+            getTopHeadlines()
+        }
     }
 
 

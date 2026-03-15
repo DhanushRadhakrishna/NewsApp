@@ -1,6 +1,7 @@
 package com.example.newsapp.presentation.screens
 
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,48 +12,50 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.newsapp.ui.theme.HyperlinkBlue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.model.HeadlineSource
 import com.example.newsapp.presentation.uistate.ContentDisplayState
 import com.example.newsapp.presentation.uistate.DisplayState
 import com.example.newsapp.presentation.uistate.TopHeadlinesScreenState
 import com.example.newsapp.presentation.viewmodel.MainViewModel
+import com.example.newsapp.ui.theme.HyperlinkBlue
 import com.example.newsapp.ui.theme.NewsAppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -64,7 +67,7 @@ fun TopHeadlines(
     modifier: Modifier = Modifier,
     viewModel : MainViewModel = hiltViewModel(),
     onFavoritesIconClick: () -> Unit
-    )
+)
 {
     var isRefreshing by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -75,14 +78,15 @@ fun TopHeadlines(
             query = searchQuery,
             onQueryChange ={newQuery -> viewModel.onSearchQueryChange(newQuery)},
             onFavoritesIconClick = onFavoritesIconClick)
-         TopHeadlinesScreen(
-             uiState = uiState,
-             isRefreshing = isRefreshing,
-             refreshTopHeadlines = { viewModel.getTopHeadlines()},
-             updateIsRefreshing = {newRefreshingValue -> isRefreshing = newRefreshingValue}
-         ){
-             viewModel.paginate()
-         }
+        TopHeadlinesScreen(
+            uiState = uiState,
+            isRefreshing = isRefreshing,
+            refreshTopHeadlines = { viewModel.getTopHeadlines()},
+            onArticleClick = {url -> viewModel.onArticleClick(url)},
+            updateIsRefreshing = {newRefreshingValue -> isRefreshing = newRefreshingValue}
+        ){
+            viewModel.paginate()
+        }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,9 +94,10 @@ fun TopHeadlines(
 fun TopHeadlinesScreen(
     uiState : TopHeadlinesScreenState,
     isRefreshing : Boolean,
+    onArticleClick: (String) -> Unit,
     updateIsRefreshing : (Boolean) -> Unit,
     refreshTopHeadlines : () -> Unit,
-    getNextPage : () -> Unit
+    getNextPage : () -> Unit,
     )
 {
     val listState = rememberLazyListState()
@@ -117,7 +122,7 @@ fun TopHeadlinesScreen(
         },
         modifier = Modifier.fillMaxSize()
     ){
-        when(uiState.displayState){
+        when(val displayState = uiState.displayState){
             is DisplayState.Loading ->{
                 updateIsRefreshing(false)
                 Box(
@@ -139,21 +144,33 @@ fun TopHeadlinesScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState()),
                 ) {
-                    Text(text = uiState.displayState.message)
+                    Text(text = displayState.message)
                 }
+//                LazyColumn(state = listState,modifier = Modifier.fillMaxSize()){
+//                    items(
+//                        items = dummyArticles,
+//                        key = {article -> article.url}
+//                    ){article ->
+//                        HeadlineItem(article = article)
+//                        HorizontalDivider()
+//                    }
+//                }
             }
             is DisplayState.Content ->{
                 updateIsRefreshing(false)
                 LazyColumn(state = listState,modifier = Modifier.fillMaxSize()) {
                     items(
-                        items = uiState.displayState.articleHeadlines,
-                        key = {article -> article.url}
+                        items = displayState.articleHeadlines,
+//                        key = {article -> article.url}
                     ) { article ->
-                        HeadlineItem(article = article)
+                        HeadlineItem(
+                            article = article,
+                            onArticleClick = {articleUrl -> onArticleClick(articleUrl)}
+                        )
                         HorizontalDivider()
                     }
                     item{
-                        if(uiState.displayState.contentDisplayState is ContentDisplayState.Loading)
+                        if(displayState.contentDisplayState is ContentDisplayState.Loading)
                         {
                             Box(
                                 modifier = Modifier
@@ -166,10 +183,10 @@ fun TopHeadlinesScreen(
                         }
                     }
                     item{
-                        if(uiState.displayState.contentDisplayState is ContentDisplayState.PaginationError)
+                        if(displayState.contentDisplayState is ContentDisplayState.PaginationError)
                         {
                             Text(
-                                text = uiState.displayState.contentDisplayState.message,
+                                text = displayState.contentDisplayState.message,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 8.dp, bottom = 16.dp),
@@ -198,14 +215,19 @@ fun TopHeadlinesScreen(
 }
 
 @Composable
-fun HeadlineItem(article: ArticleHeadline, modifier: Modifier = Modifier) {
+fun HeadlineItem(article: ArticleHeadline,
+                 onArticleClick : (String) -> Unit,
+                 modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val publishedDate = article.publishedAt.take(10)
-
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { expanded = !expanded }
+            .clickable {
+                expanded = !expanded
+                onArticleClick(article.url)
+            }
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(
@@ -227,14 +249,32 @@ fun HeadlineItem(article: ArticleHeadline, modifier: Modifier = Modifier) {
                         color = HyperlinkBlue,
                         textDecoration = TextDecoration.Underline
                     ),
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, article.url.toUri())
+                            context.startActivity(intent)
+                        }
                 )
             }
-            Icon(
-                imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                contentDescription = if (expanded) "Collapse" else "Expand",
-                modifier = Modifier.padding(start = 8.dp)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                IconButton(onClick = {  }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = "Favorite",
+                        modifier = Modifier.size(width = 22.dp, height = 22.dp)
+                    )
+                }
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (expanded) "Collapse" else "Expand",
+                    modifier = Modifier
+                )
+            }
+
         }
         if (expanded) {
             Text(
@@ -268,6 +308,14 @@ fun NewsScreenPreview() {
         )
     }
     NewsAppTheme {
+        TopHeadlinesScreen(
+            uiState = TopHeadlinesScreenState(displayState = DisplayState.Content(fakeArticles)),
+            isRefreshing = false,
+            onArticleClick = {},
+            refreshTopHeadlines = {},
+            updateIsRefreshing = {},
+            getNextPage = {}
+        )
     }
 }
 
@@ -282,7 +330,8 @@ fun HeadlineItemPreview() {
                 description = "A brief description of the article content goes here.",
                 url = "",
                 publishedAt = "2024-03-14T08:00:00Z"
-            )
+            ),
+            {}
         )
     }
 }

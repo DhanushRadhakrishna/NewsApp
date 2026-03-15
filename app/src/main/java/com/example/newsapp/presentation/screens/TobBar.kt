@@ -40,12 +40,6 @@ fun TopBar(query : String, onFavoritesIconClick : () -> Unit, onQueryChange : (S
             singleLine = true,
             modifier = Modifier.weight(1f)
         )
-        IconButton(onClick = { onFavoritesIconClick() }) {
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                modifier = Modifier.size(width = 35.dp, height = 35.dp)
-            )
-        }
+
     }
 }

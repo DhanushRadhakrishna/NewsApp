@@ -1,11 +1,15 @@
 package com.example.newsapp.data.network.di
 
+import android.content.Context
 import com.example.newsapp.BuildConfig
 import com.example.newsapp.data.network.api.NewsApi
 import com.example.newsapp.data.network.utils.Constants
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import jakarta.inject.Singleton
 import okhttp3.Interceptor
@@ -58,5 +62,10 @@ object NetworkModule {
         return retrofit.create(NewsApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun providesFirebaseAnalytics(@ApplicationContext context: Context) : FirebaseAnalytics{
+        return FirebaseAnalytics.getInstance(context)
+    }
 
 }

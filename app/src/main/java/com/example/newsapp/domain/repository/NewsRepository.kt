@@ -9,5 +9,5 @@ interface NewsRepository {
 
     suspend fun getPagedHeadlines(page : Int) : Result<News>
 
-    //suspend fun getFavoriteNewsArticles()
+    suspend fun getSearchedNews(query : String) : Result<News>
 }

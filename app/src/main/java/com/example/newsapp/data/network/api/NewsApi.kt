@@ -21,5 +21,9 @@ interface NewsApi {
         @Query("page") page : Int
     ) : NewsResponse
 
+    @GET("everything")
+    suspend fun getSearchedNews(
+        @Query("q") query : String
+    ) : NewsResponse
 
 }

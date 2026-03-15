@@ -21,4 +21,8 @@ class NewsRepositoryImpl @Inject constructor(
         return safeApiCall { newsApiService.getPagedHeadlines(page = page).toDomain() }
     }
 
+    override suspend fun getSearchedNews(query: String): Result<News> {
+        return safeApiCall { newsApiService.getSearchedNews(query).toDomain() }
+    }
+
 }

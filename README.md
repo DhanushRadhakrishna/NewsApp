@@ -9,5 +9,6 @@ The app supports the following functionalities:
 7. Tracks user interactions to Firebase Analytics.
 
 Here are few images from the app.
-![screenshot](https://github.com/DhanushRadhakrishna/NewsApp/assets/NewsApp1.jpeg)
-![screenshot](https://github.com/DhanushRadhakrishna/NewsApp/assets/NewsApp2.jpeg)
+
+![Screenshot 1](assets/NewsApp1.jpeg)
+![Screenshot 2](assets/NewApp2.jpeg)

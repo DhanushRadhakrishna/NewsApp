@@ -47,7 +47,7 @@ Or please email me at dhanush8699@gmail.com for my apiKey.
 # NewsApp — High-Level Architecture                                                                                                                                                                                                
                                                                                                                                                                           
 
-  ## Architecture Pattern
+ ## Architecture Pattern
 
   \```
   ┌─────────────────────────────────────────────┐
@@ -61,6 +61,8 @@ Or please email me at dhanush8699@gmail.com for my apiKey.
   │  Repository Impls → Network API + Room DB   │
   └─────────────────────────────────────────────┘
   \```
+
+
 
   Dependency flow is strictly **top-down**: Presentation depends on Domain; Domain defines interfaces; Data implements them. The Domain layer has zero Android/framework dependencies.
 

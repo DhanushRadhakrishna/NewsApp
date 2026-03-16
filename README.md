@@ -47,21 +47,19 @@ Or please email me at dhanush8699@gmail.com for my apiKey.
 # NewsApp — High-Level Architecture                                                                                                                                                                                                
                                                                                                                                                                           
 
- ## Architecture Pattern
-
-  \```
-  ┌─────────────────────────────────────────────┐
-  │              Presentation Layer             │
-  │  Compose UI → ViewModel → UIState (Flow)    │
-  ├─────────────────────────────────────────────┤
-  │               Domain Layer                  │
-  │   Use Cases → Repository Interfaces         │
-  ├─────────────────────────────────────────────┤
-  │                Data Layer                   │
-  │  Repository Impls → Network API + Room DB   │
-  └─────────────────────────────────────────────┘
-  \```
-
+## Architecture Pattern
+```
+┌─────────────────────────────────────────────┐
+│              Presentation Layer             │
+│  Compose UI → ViewModel → UIState (Flow)    │
+├─────────────────────────────────────────────┤
+│               Domain Layer                  │
+│   Use Cases → Repository Interfaces         │
+├─────────────────────────────────────────────┤
+│                Data Layer                   │
+│  Repository Impls → Network API + Room DB   │
+└─────────────────────────────────────────────┘
+```
 
 
   Dependency flow is strictly **top-down**: Presentation depends on Domain; Domain defines interfaces; Data implements them. The Domain layer has zero Android/framework dependencies.

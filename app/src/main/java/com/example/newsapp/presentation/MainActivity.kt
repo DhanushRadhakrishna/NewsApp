@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsapp.presentation.navigation.Destination
 import com.example.newsapp.presentation.navigation.FavoritesDestination
 import com.example.newsapp.presentation.navigation.HomeDestination
+import com.example.newsapp.presentation.screens.FavoritesScreen
 import com.example.newsapp.presentation.screens.TopHeadlines
 import com.example.newsapp.presentation.viewmodel.MainViewModel
 import com.example.newsapp.presentation.viewmodel.ThemeViewModel
@@ -119,9 +120,7 @@ fun NewsApp(navController: NavHostController,
                 )
             }
             composable<FavoritesDestination>{
-                Text(
-                    text = "favorite screen"
-                )
+                FavoritesScreen()
             }
 
         }

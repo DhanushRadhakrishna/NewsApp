@@ -1,4 +1,4 @@
-package com.example.newsapp.data.di
+package com.example.newsapp.data.repository.di
 
 import com.example.newsapp.data.repository.NewsRepositoryImpl
 import com.example.newsapp.domain.repository.NewsRepository

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -72,6 +73,7 @@ fun TopHeadlines(
     var isRefreshing by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val favoriteUrls by viewModel.favoriteUrls.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
         TopBar(
@@ -81,8 +83,10 @@ fun TopHeadlines(
         TopHeadlinesScreen(
             uiState = uiState,
             isRefreshing = isRefreshing,
+            favoriteUrls = favoriteUrls,
             refreshTopHeadlines = { viewModel.getTopHeadlines()},
             onArticleClick = {url -> viewModel.onArticleClick(url)},
+            addFavorite = {article -> viewModel.onAddFavorite(article)},
             updateIsRefreshing = {newRefreshingValue -> isRefreshing = newRefreshingValue}
         ){
             viewModel.paginate()
@@ -94,9 +98,11 @@ fun TopHeadlines(
 fun TopHeadlinesScreen(
     uiState : TopHeadlinesScreenState,
     isRefreshing : Boolean,
+    favoriteUrls : Set<String>,
     onArticleClick: (String) -> Unit,
     updateIsRefreshing : (Boolean) -> Unit,
     refreshTopHeadlines : () -> Unit,
+    addFavorite : (ArticleHeadline) -> Unit,
     getNextPage : () -> Unit,
     )
 {
@@ -161,10 +167,12 @@ fun TopHeadlinesScreen(
                 LazyColumn(state = listState,modifier = Modifier.fillMaxSize()) {
                     items(
                         items = displayState.articleHeadlines,
-//                        key = {article -> article.url}
+                        key = {article -> article.url}
                     ) { article ->
                         HeadlineItem(
                             article = article,
+                            isFavorite = article.url in favoriteUrls,
+                            addFavorite = {addFavorite(article)},
                             onArticleClick = {articleUrl -> onArticleClick(articleUrl)}
                         )
                         HorizontalDivider()
@@ -216,7 +224,9 @@ fun TopHeadlinesScreen(
 
 @Composable
 fun HeadlineItem(article: ArticleHeadline,
+                 isFavorite : Boolean,
                  onArticleClick : (String) -> Unit,
+                 addFavorite: () -> Unit,
                  modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val publishedDate = article.publishedAt.take(10)
@@ -261,9 +271,10 @@ fun HeadlineItem(article: ArticleHeadline,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                IconButton(onClick = {  }) {
+                IconButton(onClick = { addFavorite() }) {
                     Icon(
-                        imageVector = Icons.Outlined.Favorite,
+                        imageVector = if(isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder
+                        ,
                         contentDescription = "Favorite",
                         modifier = Modifier.size(width = 22.dp, height = 22.dp)
                     )
@@ -314,6 +325,8 @@ fun NewsScreenPreview() {
             onArticleClick = {},
             refreshTopHeadlines = {},
             updateIsRefreshing = {},
+            favoriteUrls = setOf(),
+            addFavorite = {},
             getNextPage = {}
         )
     }
@@ -331,6 +344,8 @@ fun HeadlineItemPreview() {
                 url = "",
                 publishedAt = "2024-03-14T08:00:00Z"
             ),
+            true,
+            {},
             {}
         )
     }

@@ -68,7 +68,10 @@ fun FavoritesScreen(
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(items = favorites, key = { it.url }) { article ->
-                    FavoriteItem(article = article){viewModel.removeFromFavorites(article)}
+                    FavoriteItem(
+                        article = article,
+                        Modifier.animateItem()){
+                        viewModel.removeFromFavorites(article) }
                     HorizontalDivider()
                 }
             }
@@ -78,7 +81,7 @@ fun FavoritesScreen(
 
 @Composable
 fun FavoriteItem(article: FavoriteArticle,
-                 modifier: Modifier = Modifier,
+                 modifier: Modifier,
                  removeFavorite:() -> Unit
                  ) {
 //    Column(

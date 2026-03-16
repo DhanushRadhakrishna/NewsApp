@@ -2,7 +2,11 @@ package com.example.newsapp.presentation.screens
 
 
 import android.content.Intent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -75,7 +81,9 @@ fun TopHeadlines(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val favoriteUrls by viewModel.favoriteUrls.collectAsStateWithLifecycle()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier
+        .fillMaxSize()
+    ) {
         TopBar(
             query = searchQuery,
             onQueryChange ={newQuery -> viewModel.onSearchQueryChange(newQuery)},
@@ -107,6 +115,8 @@ fun TopHeadlinesScreen(
     )
 {
     val listState = rememberLazyListState()
+    //this logic is to trigger a call to get the next page everytime the user scrolls to the end.
+    //since I am not using Paging library because the api does not provide page information, paging is done manually
     LaunchedEffect(listState) {
         snapshotFlow {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
@@ -173,6 +183,7 @@ fun TopHeadlinesScreen(
                             article = article,
                             isFavorite = article.url in favoriteUrls,
                             addFavorite = {addFavorite(article)},
+                            modifier = Modifier.animateItem(),
                             onArticleClick = {articleUrl -> onArticleClick(articleUrl)}
                         )
                         HorizontalDivider()
@@ -227,7 +238,7 @@ fun HeadlineItem(article: ArticleHeadline,
                  isFavorite : Boolean,
                  onArticleClick : (String) -> Unit,
                  addFavorite: () -> Unit,
-                 modifier: Modifier = Modifier) {
+                 modifier: Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val publishedDate = article.publishedAt.take(10)
     val context = LocalContext.current
@@ -346,7 +357,8 @@ fun HeadlineItemPreview() {
             ),
             true,
             {},
-            {}
+            {},
+            modifier = Modifier
         )
     }
 }

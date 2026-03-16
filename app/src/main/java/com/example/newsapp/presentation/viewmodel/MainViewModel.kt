@@ -21,6 +21,7 @@ import com.example.newsapp.data.network.utils.dummyNews
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.model.toFavoriteArticle
 import com.example.newsapp.domain.repository.FavoriteRepository
+import com.example.newsapp.domain.usecase.FavoritesUseCase
 import com.example.newsapp.domain.usecase.SearchNewsUseCase
 import com.example.newsapp.presentation.screens.TopHeadlines
 import com.example.newsapp.presentation.uistate.ContentDisplayState
@@ -46,7 +47,7 @@ class MainViewModel @Inject constructor(
     private val newsUseCase : NewsUseCase,
     private val searchNewsUseCase: SearchNewsUseCase,
     private val firebaseAnalytics : FirebaseAnalytics,
-    private val favoriteRepository: FavoriteRepository
+    private val favoritesUseCase: FavoritesUseCase
 )  : ViewModel(){
 
     private val _uiState = MutableStateFlow(TopHeadlinesScreenState(displayState = DisplayState.Loading))
@@ -58,7 +59,7 @@ class MainViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow<String>("")
     val searchQuery : StateFlow<String> = _searchQuery.asStateFlow()
 
-    val favoriteUrls: StateFlow<Set<String>> = favoriteRepository.allFavorites
+    val favoriteUrls: StateFlow<Set<String>> = favoritesUseCase.allFavorites
         .map { favorites -> favorites.map { it.url }.toSet() }
         .stateIn(
             scope = viewModelScope,
@@ -73,6 +74,7 @@ class MainViewModel @Inject constructor(
 
     fun getTopHeadlines(){  //this function should only be called when the activity is created
         page = 1
+        _searchQuery.value = ""
         viewModelScope.launch {
             _uiState.update { it.copy(displayState = DisplayState.Loading)
             }
@@ -216,11 +218,11 @@ class MainViewModel @Inject constructor(
     fun onAddFavorite(article : ArticleHeadline)
     {
         viewModelScope.launch {
-            if(favoriteRepository.isFavorite(article.url).first()){
-                favoriteRepository.removeFavorite(article.toFavoriteArticle())
+            if(favoritesUseCase.isFavorite(article.url).first()){
+                favoritesUseCase.removeFavorite(article.toFavoriteArticle())
             }
             else{
-                favoriteRepository.addFavorite(article)
+                favoritesUseCase.addFavorite(article)
             }
         }
         firebaseAnalytics.logEvent("AddedFavorite",Bundle().apply { putString("favorite_article",article.url) })

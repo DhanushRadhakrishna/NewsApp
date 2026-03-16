@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsapp.data.local.entity.FavoriteArticle
 import com.example.newsapp.domain.repository.FavoriteRepository
+import com.example.newsapp.domain.usecase.FavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,10 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor (
-    private val favoriteRepository: FavoriteRepository
+    private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel(){
 
-    val allFavorites : StateFlow<List<FavoriteArticle>> = favoriteRepository.allFavorites
+    val allFavorites : StateFlow<List<FavoriteArticle>> = favoritesUseCase.allFavorites
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -25,7 +26,7 @@ class FavoritesViewModel @Inject constructor (
 
     fun removeFromFavorites(article : FavoriteArticle)
     {
-        viewModelScope.launch { favoriteRepository.removeFavorite(article) }
+        viewModelScope.launch { favoritesUseCase.removeFavorite(article) }
     }
 
 }

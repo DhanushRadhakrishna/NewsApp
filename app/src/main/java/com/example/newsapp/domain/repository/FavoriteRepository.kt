@@ -1,6 +1,6 @@
 package com.example.newsapp.domain.repository
 
-import com.example.newsapp.data.local.entity.FavoriteArticle
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 import com.example.newsapp.domain.model.ArticleHeadline
 import kotlinx.coroutines.flow.Flow
 

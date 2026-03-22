@@ -1,9 +1,9 @@
-package com.example.newsapp.data.local.db
+package com.example.newsapp.data.local.room.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.newsapp.data.local.dao.FavoriteArticleDao
-import com.example.newsapp.data.local.entity.FavoriteArticle
+import com.example.newsapp.data.local.room.dao.FavoriteArticleDao
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 
 
 @Database(

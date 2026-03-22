@@ -5,7 +5,6 @@ import com.example.newsapp.data.model.NewsResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-//base_url = https://newsapi.org/v2/
 interface NewsApi {
 
     @GET("top-headlines")

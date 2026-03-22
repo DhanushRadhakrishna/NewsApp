@@ -1,11 +1,11 @@
-package com.example.newsapp.presentation.di
+package com.example.newsapp.data.local.preferences.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.example.newsapp.presentation.userpreferences.UserPreferencesRepository
-import com.example.newsapp.presentation.userpreferences.UserPreferencesRepositoryImpl
-import com.example.newsapp.presentation.userpreferences.userDataStore
+import com.example.newsapp.data.local.preferences.userpreferences.UserPreferencesRepository
+import com.example.newsapp.data.local.preferences.userpreferences.UserPreferencesRepositoryImpl
+import com.example.newsapp.data.local.preferences.userpreferences.userDataStore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

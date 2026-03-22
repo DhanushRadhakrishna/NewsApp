@@ -2,12 +2,8 @@ package com.example.newsapp.presentation.viewmodel
 
 import android.os.Bundle
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsapp.data.local.entity.FavoriteArticle
-import com.example.newsapp.data.model.Article
 import com.example.newsapp.domain.usecase.NewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,22 +12,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.newsapp.data.network.utils.Result
-import com.example.newsapp.data.network.utils.dummyArticles
-import com.example.newsapp.data.network.utils.dummyNews
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.model.toFavoriteArticle
-import com.example.newsapp.domain.repository.FavoriteRepository
 import com.example.newsapp.domain.usecase.FavoritesUseCase
 import com.example.newsapp.domain.usecase.SearchNewsUseCase
-import com.example.newsapp.presentation.screens.TopHeadlines
 import com.example.newsapp.presentation.uistate.ContentDisplayState
 import com.example.newsapp.presentation.uistate.DisplayState
 import com.example.newsapp.presentation.uistate.TopHeadlinesScreenState
-import com.example.newsapp.presentation.userpreferences.UserPreferencesRepository
-import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -53,7 +41,7 @@ class MainViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TopHeadlinesScreenState(displayState = DisplayState.Loading))
     val uiState : StateFlow<TopHeadlinesScreenState> = _uiState.asStateFlow()
 
-    private var page = 1
+    private var page = 0
     private var reachedEndOfList = false
 
     private val _searchQuery = MutableStateFlow<String>("")

@@ -1,6 +1,6 @@
 package com.example.newsapp.domain.model
 
-import com.example.newsapp.data.local.entity.FavoriteArticle
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 
 data class ArticleHeadline(
     val source: HeadlineSource,

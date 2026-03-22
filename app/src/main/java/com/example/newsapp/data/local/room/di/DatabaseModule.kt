@@ -1,9 +1,9 @@
-package com.example.newsapp.data.local.di
+package com.example.newsapp.data.local.room.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.newsapp.data.local.dao.FavoriteArticleDao
-import com.example.newsapp.data.local.db.NewsArticlesDatabase
+import com.example.newsapp.data.local.room.dao.FavoriteArticleDao
+import com.example.newsapp.data.local.room.db.NewsArticlesDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

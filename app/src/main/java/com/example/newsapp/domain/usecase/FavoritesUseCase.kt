@@ -1,6 +1,6 @@
 package com.example.newsapp.domain.usecase
 
-import com.example.newsapp.data.local.entity.FavoriteArticle
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.repository.FavoriteRepository
 import kotlinx.coroutines.flow.Flow

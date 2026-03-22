@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,9 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.newsapp.data.local.entity.FavoriteArticle
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 import com.example.newsapp.presentation.viewmodel.FavoritesViewModel
-import com.example.newsapp.presentation.viewmodel.MainViewModel
 import com.example.newsapp.ui.theme.HyperlinkBlue
 
 @Composable

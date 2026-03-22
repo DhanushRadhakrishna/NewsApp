@@ -2,8 +2,7 @@ package com.example.newsapp.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsapp.data.local.entity.FavoriteArticle
-import com.example.newsapp.domain.repository.FavoriteRepository
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 import com.example.newsapp.domain.usecase.FavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted

@@ -162,15 +162,6 @@ fun TopHeadlinesScreen(
                 ) {
                     Text(text = displayState.message)
                 }
-//                LazyColumn(state = listState,modifier = Modifier.fillMaxSize()){
-//                    items(
-//                        items = dummyArticles,
-//                        key = {article -> article.url}
-//                    ){article ->
-//                        HeadlineItem(article = article)
-//                        HorizontalDivider()
-//                    }
-//                }
             }
             is DisplayState.Content ->{
                 updateIsRefreshing(false)

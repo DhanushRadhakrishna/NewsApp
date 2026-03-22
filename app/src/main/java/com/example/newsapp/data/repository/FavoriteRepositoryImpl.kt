@@ -1,7 +1,7 @@
 package com.example.newsapp.data.repository
 
-import com.example.newsapp.data.local.dao.FavoriteArticleDao
-import com.example.newsapp.data.local.entity.FavoriteArticle
+import com.example.newsapp.data.local.room.dao.FavoriteArticleDao
+import com.example.newsapp.data.local.room.entity.FavoriteArticle
 import com.example.newsapp.domain.model.ArticleHeadline
 import com.example.newsapp.domain.model.toFavoriteArticle
 import com.example.newsapp.domain.repository.FavoriteRepository

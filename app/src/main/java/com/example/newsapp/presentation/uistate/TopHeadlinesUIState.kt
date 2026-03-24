@@ -25,11 +25,4 @@ sealed interface ContentDisplayState{
         val message : String
     ) : ContentDisplayState
 }
-/*
-
-    problem 1: paginate() triggers even if I go scroll up and scroll down
-
-
-
- */
 

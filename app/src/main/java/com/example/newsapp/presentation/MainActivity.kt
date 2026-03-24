@@ -111,13 +111,7 @@ fun NewsApp(navController: NavHostController,
         NavHost(navController, startDestination = HomeDestination,modifier = Modifier) {
 
             composable<HomeDestination> { backStackEntry ->
-                TopHeadlines(
-                    onFavoritesIconClick = {
-                        navController.navigateSingleTopTo(
-                            FavoritesDestination
-                        )
-                    }
-                )
+                TopHeadlines()
             }
             composable<FavoritesDestination>{
                 FavoritesScreen()

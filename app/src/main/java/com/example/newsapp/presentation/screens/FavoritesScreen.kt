@@ -82,29 +82,6 @@ fun FavoriteItem(article: FavoriteArticle,
                  modifier: Modifier,
                  removeFavorite:() -> Unit
                  ) {
-//    Column(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 16.dp, vertical = 12.dp)
-//    ) {
-//        Text(
-//            text = article.title,
-//            style = MaterialTheme.typography.titleMedium,
-//            fontWeight = FontWeight.SemiBold
-//        )
-//        Text(
-//            text = article.sourceName,
-//            style = MaterialTheme.typography.bodySmall,
-//            color = MaterialTheme.colorScheme.onSurfaceVariant,
-//            modifier = Modifier.padding(top = 4.dp)
-//        )
-//        Text(
-//            text = article.publishedAt.take(10),
-//            style = MaterialTheme.typography.bodySmall,
-//            color = MaterialTheme.colorScheme.onSurfaceVariant,
-//            modifier = Modifier.padding(top = 2.dp)
-//        )
-//    }
     var expanded by remember { mutableStateOf(false) }
     val publishedDate = article.publishedAt.take(10)
     val context = LocalContext.current

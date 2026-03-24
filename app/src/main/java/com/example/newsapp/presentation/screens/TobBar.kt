@@ -29,7 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TopBar(query : String, onFavoritesIconClick : () -> Unit, onQueryChange : (String) -> Unit, modifier: Modifier = Modifier, ) {
+fun TopBar(query : String, onQueryChange : (String) -> Unit, modifier: Modifier = Modifier, ) {
 
     Row(
         modifier = modifier

@@ -20,6 +20,7 @@ import com.example.newsapp.presentation.uistate.ContentDisplayState
 import com.example.newsapp.presentation.uistate.DisplayState
 import com.example.newsapp.presentation.uistate.TopHeadlinesScreenState
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -41,7 +42,7 @@ class MainViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TopHeadlinesScreenState(displayState = DisplayState.Loading))
     val uiState : StateFlow<TopHeadlinesScreenState> = _uiState.asStateFlow()
 
-    private var page = 0
+    private var page = 1
     private var reachedEndOfList = false
 
     private val _searchQuery = MutableStateFlow<String>("")
@@ -60,14 +61,12 @@ class MainViewModel @Inject constructor(
         observeSearchQuery()
     }
 
-    fun getTopHeadlines(){  //this function should only be called when the activity is created
+    fun getTopHeadlines(){  //this function should only be called when page 0 is needed
         page = 1
         _searchQuery.value = ""
         viewModelScope.launch {
-            _uiState.update { it.copy(displayState = DisplayState.Loading)
-            }
+            _uiState.update { it.copy(displayState = DisplayState.Loading) }
             val apiResult = newsUseCase.invoke(page)
-//            val apiResult = Result.Success(dummyNews)
             when(apiResult){
                 is Result.Success ->{
                     _uiState.update {
@@ -172,12 +171,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    @OptIn(FlowPreview::class)
     fun observeSearchQuery() {
         viewModelScope.launch {
             _searchQuery
                 .debounce(500)   // wait 500ms after user stops typing
                 .filter { it.isNotBlank() }
-                .distinctUntilChanged()
+                .distinctUntilChanged() //filters all same values that are collected
                 .map { it.trim() }
                 .collect { query ->
                     _uiState.update { it.copy(displayState = DisplayState.Loading) }
@@ -197,7 +197,8 @@ class MainViewModel @Inject constructor(
     fun onSearchQueryChange(query : String)
     {
         _searchQuery.value = query
-        if(_searchQuery.value.trim() =="")
+        //if the search query is empty, we need to get back to the top headlines
+        if(_searchQuery.value.trim().isEmpty())
         {
             getTopHeadlines()
         }

@@ -73,7 +73,6 @@ import kotlinx.coroutines.flow.filter
 fun TopHeadlines(
     modifier: Modifier = Modifier,
     viewModel : MainViewModel = hiltViewModel(),
-    onFavoritesIconClick: () -> Unit
 )
 {
     var isRefreshing by remember { mutableStateOf(false) }
@@ -87,7 +86,7 @@ fun TopHeadlines(
         TopBar(
             query = searchQuery,
             onQueryChange ={newQuery -> viewModel.onSearchQueryChange(newQuery)},
-            onFavoritesIconClick = onFavoritesIconClick)
+            )
         TopHeadlinesScreen(
             uiState = uiState,
             isRefreshing = isRefreshing,
